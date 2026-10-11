@@ -10,6 +10,24 @@ Delete the example before you submit.
 
 
 
+### CC-02 — "Can't read anything in dark mode"
+
+**Reproduced:** Started the server, opened localhost:3000 and switched to dark mode.
+On every dish card the name and price were dark brown on a dark card, almost invisible.
+
+**Cause:** `frontend/style.css:294` had `.dish-body { color: #2b2118 }` — a fixed
+dark-brown colour. The name and price set no colour of their own, so they inherit it.
+In dark mode `--ink` flips to light, but this fixed value never changes.
+
+**Fix:** Changed `.dish-body`'s colour to `var(--ink)`, the theme text colour. It is
+the one rule both texts inherit from, so both are fixed and follow the theme.
+
+**Checked:** Hard-refreshed. Names and prices are readable in dark mode and light mode.
+
+**Time:** ~15 minutes.
+
+
+
 ## Example — delete this
 
 ### CC-99 — "The cart total is wrong"
