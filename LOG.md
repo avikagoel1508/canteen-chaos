@@ -28,6 +28,30 @@ the one rule both texts inherit from, so both are fixed and follow the theme.
 
 
 
+### CC-01 — "The search suggestions are behind everything"
+
+**Reproduced:** Opened localhost:3000, went to the menu and started typing a dish name
+(e.g. "sam"). The suggestion list showed up under the search box, but its lower rows sat
+behind the category bar. Only the thin strip right under the input could be clicked;
+clicking the rest did nothing.
+
+**Cause:** `.suggest-box` had `z-index: 100`, which looks big enough, but its parent
+`.search-wrap` had `z-index: 1`. A positioned element with a z-index creates its own
+stacking context, so the dropdown's `100` was only ever compared with things inside
+`.search-wrap`, never with the `.cat-tabs` bar next to it, which is `z-index: 40` inside the
+same `.filters` box. The category bar painted on top and swallowed the clicks.
+
+**Fix:** Raised `.search-wrap` to `z-index: 45` in `frontend/style.css:756`, so the whole
+search area (and the dropdown inside it) stacks above the category bar's `40`. Changed one
+value, nothing else.
+
+**Checked:** Reloaded and typed again. The suggestions now sit over the category bar and
+every row is clickable. Arrow keys and Escape still behave.
+
+**Time:** ~20 minutes.
+
+
+
 ## Example — delete this
 
 ### CC-99 — "The cart total is wrong"
