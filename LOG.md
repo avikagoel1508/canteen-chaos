@@ -52,6 +52,39 @@ every row is clickable. Arrow keys and Escape still behave.
 
 
 
+### CC-03 — "The menu is wider than my phone"
+
+**Reproduced:** Opened the menu in Chrome at phone widths (about 500-620px) and measured the
+page. `document.documentElement.scrollWidth` was 615px while the window itself was only 512px
+wide, so the page scrolled sideways and the right-hand dish cards (with their "Add to Cart"
+buttons) were cut off the edge. At 760px+ and at 480px or less there was no overflow, which is
+why it only showed on certain phone widths.
+
+**Cause:** Two rules inside the `@media (max-width: 760px)` block of `frontend/style.css`
+were asking for more width than a card has:
+  - `.dish-card img { width: auto; min-width: 100%; height: 170px; aspect-ratio: 3 / 2; }` —
+    `height: 170px` together with `aspect-ratio: 3/2` makes `width: auto` resolve to 255px. On
+    a phone the card is narrower than 255px, so the image forced the grid column to 255px and
+    pushed the whole two-column grid past the screen edge.
+  - `.name-btn { width: max-content; }` — this stopped long dish names from wrapping, so a
+    column with a long name (e.g. "Paneer Butter Masala with Butter Naan") grew even wider.
+  Added together, the grid was wider than the viewport.
+
+**Fix:** In the same media block I removed `width: auto; min-width: 100%; aspect-ratio: 3 / 2`
+from the image rule, leaving `height: 170px`. The base `.dish-card img` rule already sets
+`width: 100%` and `object-fit: cover`, so the image now fills its card instead of stretching
+it. I also deleted the `.name-btn { width: max-content; }` line so names wrap like they do on
+desktop. CSS only, no markup or JS touched.
+
+**Checked:** Re-measured with Chrome: `scrollWidth` now equals the window width at 500, 560,
+620, 800 and 850px (was 615 vs 512). No sideways scroll and no cut-off buttons. Images still
+fill the card. The picks strip is still a horizontal scroller (that is intentional).
+
+**Time:** ~45 minutes, most of it setting up a headless Chrome measurement to see the real
+card widths instead of guessing.
+
+
+
 ## Example — delete this
 
 ### CC-99 — "The cart total is wrong"
