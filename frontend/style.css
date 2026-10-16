@@ -699,7 +699,7 @@ h1, h2, h3 { margin: 0; }
 }
 
 @media (max-width: 480px) {
-  .view { overflow-x: hidden; }
+  .view { overflow-x: clip; }
 
   .nav-toggle { display: flex; }
 
@@ -1036,6 +1036,7 @@ body.is-offline .site-header { filter: grayscale(0.4); }
     content: "";
     position: absolute;
     background: transparent;
+    pointer-events: none;
     transition: background 0.2s;
   }
 
